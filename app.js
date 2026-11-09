@@ -1,13 +1,15 @@
 
-// ==========================================
-// STUDYMATE - COMPLETE JAVASCRIPT
-// ==========================================
+/* =========================================
+   STUDYMATE - COMPLETE APP.JS
+   ========================================= */
 
-// 1. GOOGLE APPS SCRIPT BACKEND
+// 1. GOOGLE APPS SCRIPT BACKEND URL
+
 const STUDYMATE_API =
 "https://script.google.com/macros/s/AKfycbzqM5ucgZUddKAUw1p7cks8l6j5UPFMsenvyriV_ZJ3-8idBpfKXlqnmHHMx3jZLEpQdg/exec";
 
 // 2. SUBJECTS
+
 const subjects = [
   {
     name: "C Programming",
@@ -37,18 +39,19 @@ const subjects = [
 ];
 
 // 3. MCQ QUESTIONS
+
 const questions = [
   {
     q: "Which language is commonly used to teach structured programming?",
     o: ["C", "HTML", "CSS", "SQL"],
     a: 0,
-    why: "C is a general-purpose procedural language used to teach structured programming."
+    why: "C is a general-purpose procedural programming language."
   },
   {
     q: "Which data structure follows FIFO?",
     o: ["Stack", "Queue", "Tree", "Graph"],
     a: 1,
-    why: "A queue follows First In, First Out (FIFO)."
+    why: "Queue follows First In, First Out."
   },
   {
     q: "What does CPU stand for?",
@@ -64,6 +67,7 @@ const questions = [
 ];
 
 // 4. GLOBAL VARIABLES
+
 const $ = id => document.getElementById(id);
 
 let qIndex = 0;
@@ -71,20 +75,21 @@ let score = 0;
 let answered = false;
 let hindi = false;
 
-// ==========================================
+// =========================================
 // 5. DISPLAY SUBJECTS
-// ==========================================
+// =========================================
 
 function renderSubjects() {
+
   const grid = $("subjectGrid");
 
   if (!grid) return;
 
-  grid.innerHTML = subjects.map(subject => `
+  grid.innerHTML = subjects.map(s => `
     <article class="subject">
-      <div class="emoji">${subject.icon}</div>
-      <h3>${subject.name}</h3>
-      <p>${subject.detail}</p>
+      <div class="emoji">${s.icon}</div>
+      <h3>${s.name}</h3>
+      <p>${s.detail}</p>
     </article>
   `).join("");
 
@@ -93,9 +98,9 @@ function renderSubjects() {
   }
 }
 
-// ==========================================
-// 6. MCQ QUIZ
-// ==========================================
+// =========================================
+// 6. DISPLAY MCQ QUESTION
+// =========================================
 
 function renderQuestion() {
 
@@ -119,9 +124,9 @@ function renderQuestion() {
       ? "Finish quiz"
       : "Next question";
 
-  $("options").innerHTML = q.o.map((option, i) => `
+  $("options").innerHTML = q.o.map((v, i) => `
     <button class="option" data-i="${i}">
-      ${String.fromCharCode(65 + i)}. ${option}
+      ${String.fromCharCode(65 + i)}. ${v}
     </button>
   `).join("");
 
@@ -134,9 +139,9 @@ function renderQuestion() {
   });
 }
 
-// ==========================================
+// =========================================
 // 7. CHECK ANSWER
-// ==========================================
+// =========================================
 
 function choose(i) {
 
@@ -181,9 +186,9 @@ function choose(i) {
   $("nextBtn").disabled = false;
 }
 
-// ==========================================
-// 8. SAVE QUIZ PROGRESS
-// ==========================================
+// =========================================
+// 8. FINISH QUIZ
+// =========================================
 
 function finish() {
 
@@ -216,9 +221,9 @@ function finish() {
   renderQuestion();
 }
 
-// ==========================================
-// 9. NEXT QUESTION BUTTON
-// ==========================================
+// =========================================
+// 9. NEXT QUESTION
+// =========================================
 
 $("nextBtn").addEventListener("click", () => {
 
@@ -238,9 +243,9 @@ $("nextBtn").addEventListener("click", () => {
 
 });
 
-// ==========================================
+// =========================================
 // 10. UPDATE PROGRESS
-// ==========================================
+// =========================================
 
 function updateProgress() {
 
@@ -258,9 +263,9 @@ function updateProgress() {
   $("progressBest").textContent = p.best + "%";
 }
 
-// ==========================================
+// =========================================
 // 11. RESET PROGRESS
-// ==========================================
+// =========================================
 
 $("resetProgress").addEventListener("click", () => {
 
@@ -274,9 +279,9 @@ $("resetProgress").addEventListener("click", () => {
 
 });
 
-// ==========================================
-// 12. ENGLISH / HINDI LANGUAGE BUTTON
-// ==========================================
+// =========================================
+// 12. LANGUAGE SWITCH
+// =========================================
 
 $("langBtn").addEventListener("click", () => {
 
@@ -295,9 +300,9 @@ $("langBtn").addEventListener("click", () => {
 
 });
 
-// ==========================================
-// 13. LOAD NOTES FROM GOOGLE SHEETS
-// ==========================================
+// =========================================
+// 13. LOAD PUBLISHED NOTES FROM GOOGLE SHEETS
+// =========================================
 
 function loadStudyMateNotes() {
 
@@ -307,7 +312,6 @@ function loadStudyMateNotes() {
 
   list.textContent = "Loading published notes...";
 
-  // Unique callback name
   const callback =
     "studyMateCallback_" + Date.now();
 
@@ -315,8 +319,24 @@ function loadStudyMateNotes() {
 
   let completed = false;
 
-  // Handle JSONP response
+  const timeout = setTimeout(() => {
+
+    if (completed) return;
+
+    completed = true;
+
+    delete window[callback];
+
+    script.remove();
+
+    list.textContent =
+      "Server response timed out. Please refresh.";
+
+  }, 15000);
+
   window[callback] = function(data) {
+
+    if (completed) return;
 
     completed = true;
 
@@ -333,7 +353,9 @@ function loadStudyMateNotes() {
       return;
     }
 
-    const notes = data.notes || [];
+    const notes = Array.isArray(data.notes)
+      ? data.notes
+      : [];
 
     list.innerHTML = "";
 
@@ -345,7 +367,6 @@ function loadStudyMateNotes() {
       return;
     }
 
-    // Display published notes
     notes.forEach(note => {
 
       const card = document.createElement("article");
@@ -408,7 +429,6 @@ function loadStudyMateNotes() {
 
   };
 
-  // Handle errors
   script.onerror = function() {
 
     if (completed) return;
@@ -426,23 +446,6 @@ function loadStudyMateNotes() {
 
   };
 
-  // Timeout protection
-  const timeout = setTimeout(() => {
-
-    if (completed) return;
-
-    completed = true;
-
-    delete window[callback];
-
-    script.remove();
-
-    list.textContent =
-      "Server response timed out. Please refresh.";
-
-  }, 15000);
-
-  // Request Google Apps Script
   script.src =
     STUDYMATE_API +
     "?callback=" + encodeURIComponent(callback) +
@@ -452,9 +455,9 @@ function loadStudyMateNotes() {
 
 }
 
-// ==========================================
-// 14. INITIALIZE STUDYMATE
-// ==========================================
+// =========================================
+// 14. START STUDYMATE
+// =========================================
 
 renderSubjects();
 
@@ -464,4 +467,4 @@ updateProgress();
 
 loadStudyMateNotes();
 
-console.log("StudyMate initialized successfully!");
+console.log("StudyMate loaded successfully!");
