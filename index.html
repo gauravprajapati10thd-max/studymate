@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#1769d2">
+  <title>StudyMate | Learn • Practice • Improve</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#"><span class="logo">S</span><span>StudyMate<small>Learn • Practice • Improve</small></span></a>
+    <nav><a href="#subjects">Subjects</a><a href="#notes">Notes</a><a href="#quiz">MCQ Test</a><a href="#progress">Progress</a></nav>
+    <button id="langBtn" class="outline">हिंदी</button>
+  </header>
+  <main>
+    <section class="hero">
+      <div><p class="eyebrow">YOUR SMART LEARNING PARTNER</p><h1 id="heroTitle">Learn better.<br><span>Achieve more.</span></h1>
+      <p id="heroText">Explore subject-wise notes, practise MCQs and track your learning progress.</p>
+      <a class="primary linkbtn" href="#subjects">Start learning</a></div>
+      <div class="hero-art"><div class="book">📘</div><div class="cap">🎓</div><div class="spark">✦</div></div>
+    </section>
+    <section class="stats">
+      <div><strong id="testsTaken">0</strong><span>Tests completed</span></div>
+      <div><strong id="bestScore">0%</strong><span>Best score</span></div>
+      <div><strong id="subjectsCount">5</strong><span>Subjects</span></div>
+    </section>
+    <section id="subjects" class="section">
+      <div class="section-head"><div><p class="eyebrow">EXPLORE</p><h2>Popular subjects</h2></div></div>
+      <div id="subjectGrid" class="grid"></div>
+    </section>
+    <section id="notes" class="section">
+      <div class="section-head"><div><p class="eyebrow">STUDY MATERIAL</p><h2>Notes & PDF materials</h2></div></div>
+      <p class="muted">PDF links published by the StudyMate administrator will appear here.</p>
+      <div id="notesList" class="notes-list"><div class="empty">No notes have been published yet.</div></div>
+    </section>
+    <section id="quiz" class="section quiz-section">
+      <div class="section-head"><div><p class="eyebrow">TEST YOURSELF</p><h2>Quick MCQ practice</h2></div></div>
+      <div class="quiz-card">
+        <div class="quiz-meta"><span id="quizSubject">Computer Fundamentals</span><span id="questionCount">Question 1 of 3</span></div>
+        <h3 id="questionText"></h3>
+        <div id="options" class="options"></div>
+        <div class="quiz-actions"><span id="feedback" aria-live="polite"></span><button id="nextBtn" class="primary" disabled>Next question</button></div>
+      </div>
+    </section>
+    <section id="progress" class="section">
+      <div class="section-head"><div><p class="eyebrow">YOUR LEARNING</p><h2>Progress overview</h2></div></div>
+      <div class="progress-card"><div><strong id="progressTests">0</strong><span>Completed quizzes</span></div><div><strong id="progressBest">0%</strong><span>Best result</span></div><button id="resetProgress" class="outline">Reset local progress</button></div>
+      <p class="tiny">Progress in this starter version is saved on this device/browser. Account-based sync will be added after backend setup.</p>
+    </section>
+    <section class="admin-callout"><div><p class="eyebrow">FOR CONTENT MANAGERS</p><h2>StudyMate Admin</h2><p>Admin upload and publishing will be connected through a secured Google Apps Script backend in a later setup step.</p></div><span class="lock">🔐</span></section>
+  </main>
+  <footer><strong>StudyMate</strong><span>Made for learners. Free to access.</span></footer>
+  <script src="app.js"></script>
+</body>
+</html>
