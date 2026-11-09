@@ -1,68 +1,101 @@
-// ===============================
-// STUDYMATE SUBJECTS
-// ===============================
 
+// ==========================================
+// STUDYMATE - COMPLETE JAVASCRIPT
+// ==========================================
+
+// 1. GOOGLE APPS SCRIPT BACKEND
+const STUDYMATE_API =
+"https://script.google.com/macros/s/AKfycbzqM5ucgZUddKAUw1p7cks8l6j5UPFMsenvyriV_ZJ3-8idBpfKXlqnmHHMx3jZLEpQdg/exec";
+
+// 2. SUBJECTS
 const subjects = [
-  {name:"C Programming",icon:"💻",detail:"Basics, loops and arrays"},
-  {name:"C++",icon:"⚙️",detail:"OOP and data structures"},
-  {name:"Mathematics",icon:"📐",detail:"Practice and concepts"},
-  {name:"Computer Networks",icon:"🌐",detail:"Networking fundamentals"},
-  {name:"English",icon:"📚",detail:"Grammar and communication"}
+  {
+    name: "C Programming",
+    icon: "💻",
+    detail: "Basics, loops and arrays"
+  },
+  {
+    name: "C++",
+    icon: "⚙️",
+    detail: "OOP and data structures"
+  },
+  {
+    name: "Mathematics",
+    icon: "📐",
+    detail: "Practice and concepts"
+  },
+  {
+    name: "Computer Networks",
+    icon: "🌐",
+    detail: "Networking fundamentals"
+  },
+  {
+    name: "English",
+    icon: "📚",
+    detail: "Grammar and communication"
+  }
 ];
 
-// ===============================
-// MCQ QUESTIONS
-// ===============================
-
+// 3. MCQ QUESTIONS
 const questions = [
- {
-  q:"Which language is commonly used to teach structured programming?",
-  o:["C","HTML","CSS","SQL"],
-  a:0,
-  why:"C is a general-purpose procedural language."
- },
- {
-  q:"Which data structure follows FIFO?",
-  o:["Stack","Queue","Tree","Graph"],
-  a:1,
-  why:"A queue follows First In, First Out."
- },
- {
-  q:"What does CPU stand for?",
-  o:[
-    "Central Processing Unit",
-    "Computer Personal Unit",
-    "Core Program Utility",
-    "Central Print Unit"
-  ],
-  a:0,
-  why:"CPU stands for Central Processing Unit."
- }
+  {
+    q: "Which language is commonly used to teach structured programming?",
+    o: ["C", "HTML", "CSS", "SQL"],
+    a: 0,
+    why: "C is a general-purpose procedural language used to teach structured programming."
+  },
+  {
+    q: "Which data structure follows FIFO?",
+    o: ["Stack", "Queue", "Tree", "Graph"],
+    a: 1,
+    why: "A queue follows First In, First Out (FIFO)."
+  },
+  {
+    q: "What does CPU stand for?",
+    o: [
+      "Central Processing Unit",
+      "Computer Personal Unit",
+      "Core Program Utility",
+      "Central Print Unit"
+    ],
+    a: 0,
+    why: "CPU stands for Central Processing Unit."
+  }
 ];
 
+// 4. GLOBAL VARIABLES
 const $ = id => document.getElementById(id);
 
 let qIndex = 0;
 let score = 0;
 let answered = false;
+let hindi = false;
 
-// ===============================
-// SUBJECTS
-// ===============================
+// ==========================================
+// 5. DISPLAY SUBJECTS
+// ==========================================
 
 function renderSubjects() {
-  $("subjectGrid").innerHTML = subjects.map(s => `
+  const grid = $("subjectGrid");
+
+  if (!grid) return;
+
+  grid.innerHTML = subjects.map(subject => `
     <article class="subject">
-      <div class="emoji">${s.icon}</div>
-      <h3>${s.name}</h3>
-      <p>${s.detail}</p>
+      <div class="emoji">${subject.icon}</div>
+      <h3>${subject.name}</h3>
+      <p>${subject.detail}</p>
     </article>
   `).join("");
+
+  if ($("subjectsCount")) {
+    $("subjectsCount").textContent = subjects.length;
+  }
 }
 
-// ===============================
-// MCQ TEST
-// ===============================
+// ==========================================
+// 6. MCQ QUIZ
+// ==========================================
 
 function renderQuestion() {
 
@@ -86,18 +119,24 @@ function renderQuestion() {
       ? "Finish quiz"
       : "Next question";
 
-  $("options").innerHTML = q.o.map((v,i) => `
+  $("options").innerHTML = q.o.map((option, i) => `
     <button class="option" data-i="${i}">
-      ${String.fromCharCode(65+i)}. ${v}
+      ${String.fromCharCode(65 + i)}. ${option}
     </button>
   `).join("");
 
-  document.querySelectorAll(".option").forEach(b => {
-    b.addEventListener("click", () =>
-      choose(Number(b.dataset.i))
-    );
+  document.querySelectorAll(".option").forEach(button => {
+
+    button.addEventListener("click", () => {
+      choose(Number(button.dataset.i));
+    });
+
   });
 }
+
+// ==========================================
+// 7. CHECK ANSWER
+// ==========================================
 
 function choose(i) {
 
@@ -107,14 +146,16 @@ function choose(i) {
 
   const q = questions[qIndex];
 
-  document.querySelectorAll(".option").forEach((b,n) => {
+  document.querySelectorAll(".option").forEach((button, n) => {
 
-    b.disabled = true;
+    button.disabled = true;
 
-    if (n === q.a) b.classList.add("correct");
+    if (n === q.a) {
+      button.classList.add("correct");
+    }
 
     if (n === i && i !== q.a) {
-      b.classList.add("wrong");
+      button.classList.add("wrong");
     }
 
   });
@@ -123,13 +164,15 @@ function choose(i) {
 
     score++;
 
-    $("feedback").textContent = "Correct! " + q.why;
+    $("feedback").textContent =
+      "Correct! " + q.why;
 
     $("feedback").style.color = "#18834e";
 
   } else {
 
-    $("feedback").textContent = "Not quite. " + q.why;
+    $("feedback").textContent =
+      "Not quite. " + q.why;
 
     $("feedback").style.color = "#b34a4a";
 
@@ -137,6 +180,10 @@ function choose(i) {
 
   $("nextBtn").disabled = false;
 }
+
+// ==========================================
+// 8. SAVE QUIZ PROGRESS
+// ==========================================
 
 function finish() {
 
@@ -160,7 +207,7 @@ function finish() {
   updateProgress();
 
   alert(
-    `Quiz completed! Your score: ${score}/${questions.length}`
+    `Quiz completed! Your score: ${score}/${questions.length} (${Math.round(score / questions.length * 100)}%).`
   );
 
   qIndex = 0;
@@ -168,6 +215,10 @@ function finish() {
 
   renderQuestion();
 }
+
+// ==========================================
+// 9. NEXT QUESTION BUTTON
+// ==========================================
 
 $("nextBtn").addEventListener("click", () => {
 
@@ -187,9 +238,9 @@ $("nextBtn").addEventListener("click", () => {
 
 });
 
-// ===============================
-// PROGRESS TRACKING
-// ===============================
+// ==========================================
+// 10. UPDATE PROGRESS
+// ==========================================
 
 function updateProgress() {
 
@@ -207,6 +258,10 @@ function updateProgress() {
   $("progressBest").textContent = p.best + "%";
 }
 
+// ==========================================
+// 11. RESET PROGRESS
+// ==========================================
+
 $("resetProgress").addEventListener("click", () => {
 
   if (confirm("Clear progress saved in this browser?")) {
@@ -219,11 +274,9 @@ $("resetProgress").addEventListener("click", () => {
 
 });
 
-// ===============================
-// LANGUAGE SWITCH
-// ===============================
-
-let hindi = false;
+// ==========================================
+// 12. ENGLISH / HINDI LANGUAGE BUTTON
+// ==========================================
 
 $("langBtn").addEventListener("click", () => {
 
@@ -242,392 +295,166 @@ $("langBtn").addEventListener("click", () => {
 
 });
 
-// =================================================
-// STUDYMATE GOOGLE SHEETS BACKEND
-// =================================================
+// ==========================================
+// 13. LOAD NOTES FROM GOOGLE SHEETS
+// ==========================================
 
-const NOTES_API_URL =
-"https://script.google.com/macros/s/AKfycbzqM5ucgZUddKAUw1p7cks8l6j5UPFMsenvyriV_ZJ3-8idBpfKXlqnmHHMx3jZLEpQdg/exec";
-
-let allNotes = [];
-
-// ===============================
-// NOTES TOOLBAR
-// ===============================
-
-function createNotesToolbar() {
+function loadStudyMateNotes() {
 
   const list = $("notesList");
 
   if (!list) return;
 
-  const toolbar = document.createElement("div");
-
-  toolbar.style.cssText = `
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    margin:18px 0;
-  `;
-
-  const filter = document.createElement("select");
-
-  filter.id = "notesFilter";
-
-  filter.style.cssText = `
-    padding:12px;
-    border:1px solid #1769d2;
-    border-radius:8px;
-    font-size:14px;
-    flex:1;
-    min-width:150px;
-  `;
-
-  filter.innerHTML = `
-    <option value="All">All Subjects</option>
-    ${subjects.map(s =>
-      `<option value="${s.name}">${s.name}</option>`
-    ).join("")}
-  `;
-
-  filter.addEventListener("change", renderNotes);
-
-  const refresh = document.createElement("button");
-
-  refresh.id = "refreshNotes";
-
-  refresh.textContent = "↻ Refresh Notes";
-
-  refresh.style.cssText = `
-    background:#1769d2;
-    color:white;
-    border:none;
-    border-radius:8px;
-    padding:12px 18px;
-    cursor:pointer;
-  `;
-
-  refresh.addEventListener("click", loadNotes);
-
-  toolbar.append(filter, refresh);
-
-  list.parentNode.insertBefore(toolbar, list);
-
-}
-
-// ===============================
-// GOOGLE DRIVE PDF LINKS
-// ===============================
-
-function getPDFLinks(link) {
-
-  const match = link.match(
-    /\/file\/d\/([^/?]+)|[?&]id=([^&]+)/
-  );
-
-  if (match) {
-
-    const id = match[1] || match[2];
-
-    return {
-      view: `https://drive.google.com/file/d/${id}/preview`,
-      download: `https://drive.google.com/uc?export=download&id=${id}`
-    };
-
-  }
-
-  return {
-    view: link,
-    download: link
-  };
-
-}
-
-// ===============================
-// DISPLAY NOTES
-// ===============================
-
-function renderNotes() {
-
-  const list = $("notesList");
-
-  const filter = $("notesFilter");
-
-  if (!list) return;
-
-  const selected = filter ? filter.value : "All";
-
-  const filtered = allNotes.filter(note => {
-
-    return selected === "All" ||
-      String(note.Subject || "").trim().toLowerCase() ===
-      selected.toLowerCase();
-
-  });
-
-  list.replaceChildren();
-
-  if (filtered.length === 0) {
-
-    const empty = document.createElement("div");
-
-    empty.className = "empty";
-
-    empty.textContent = allNotes.length === 0
-      ? "No published notes available yet."
-      : "No notes found for this subject.";
-
-    list.appendChild(empty);
-
-    return;
-
-  }
-
-  filtered.forEach(note => {
-
-    const card = document.createElement("article");
-
-    card.className = "note-card";
-
-    card.style.cssText = `
-      background:white;
-      border:1px solid #dce5f0;
-      border-radius:14px;
-      padding:18px;
-      margin-bottom:14px;
-      box-shadow:0 3px 12px rgba(0,0,0,0.04);
-    `;
-
-    const title = document.createElement("h3");
-
-    title.textContent = note.Title || "Study Notes";
-
-    const subject = document.createElement("p");
-
-    subject.textContent = "📚 " + (note.Subject || "General");
-
-    subject.style.color = "#1769d2";
-
-    const description = document.createElement("p");
-
-    description.textContent =
-      note.Description || "Study material";
-
-    const date = document.createElement("small");
-
-    date.textContent =
-      "Uploaded: " + (note.Upload_Date || "Recently");
-
-    const links = getPDFLinks(
-      String(note.PDF_Link || "").trim()
-    );
-
-    const buttons = document.createElement("div");
-
-    buttons.style.cssText = `
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:14px;
-    `;
-
-    if (links.view && links.view.startsWith("https://")) {
-
-      const view = document.createElement("a");
-
-      view.href = links.view;
-
-      view.target = "_blank";
-
-      view.rel = "noopener noreferrer";
-
-      view.textContent = "📖 View PDF";
-
-      view.style.cssText = `
-        background:#1769d2;
-        color:white;
-        padding:10px 16px;
-        border-radius:7px;
-        text-decoration:none;
-      `;
-
-      buttons.appendChild(view);
-
-      const download = document.createElement("a");
-
-      download.href = links.download;
-
-      download.target = "_blank";
-
-      download.rel = "noopener noreferrer";
-
-      download.textContent = "⬇ Download PDF";
-
-      download.style.cssText = `
-        background:#eaf2ff;
-        color:#1769d2;
-        padding:10px 16px;
-        border-radius:7px;
-        text-decoration:none;
-      `;
-
-      buttons.appendChild(download);
-
-    } else {
-
-      const warning = document.createElement("p");
-
-      warning.textContent = "PDF link is unavailable.";
-
-      buttons.appendChild(warning);
-
-    }
-
-    card.append(
-      title,
-      subject,
-      description,
-      date,
-      buttons
-    );
-
-    list.appendChild(card);
-
-  });
-
-}
-
-// ===============================
-// LOAD NOTES FROM GOOGLE SHEETS
-// ===============================
-
-function loadNotes() {
-
-  const list = $("notesList");
-
-  const refresh = $("refreshNotes");
-
-  if (!list) return;
-
-  if (refresh) {
-
-    refresh.disabled = true;
-
-    refresh.textContent = "Loading...";
-
-  }
-
-  list.innerHTML =
-    '<div class="empty">Loading StudyMate notes...</div>';
-
-  const oldScript = document.getElementById("notesApiScript");
-
-  if (oldScript) oldScript.remove();
-
-  const callbackName = "StudyMateNotesCallback";
-
-  let completed = false;
-
-  function cleanup() {
-
-    const script = document.getElementById("notesApiScript");
-
-    if (script) script.remove();
-
-    delete window[callbackName];
-
-    if (refresh) {
-
-      refresh.disabled = false;
-
-      refresh.textContent = "↻ Refresh Notes";
-
-    }
-
-  }
-
-  function showError(message) {
-
-    list.innerHTML = "";
-
-    const error = document.createElement("div");
-
-    error.className = "empty";
-
-    error.textContent = message;
-
-    list.appendChild(error);
-
-  }
-
-  window[callbackName] = function(data) {
-
-    if (completed) return;
-
-    completed = true;
-
-    cleanup();
-
-    if (!data || data.success !== true) {
-
-      showError("Unable to load notes. Please try again.");
-
-      return;
-
-    }
-
-    allNotes = Array.isArray(data.notes)
-      ? data.notes
-      : [];
-
-    renderNotes();
-
-  };
+  list.textContent = "Loading published notes...";
+
+  // Unique callback name
+  const callback =
+    "studyMateCallback_" + Date.now();
 
   const script = document.createElement("script");
 
-  script.id = "notesApiScript";
+  let completed = false;
 
-  script.src =
-    NOTES_API_URL +
-    "?callback=" + callbackName +
-    "&_=" + Date.now();
+  // Handle JSONP response
+  window[callback] = function(data) {
 
+    completed = true;
+
+    clearTimeout(timeout);
+
+    script.remove();
+
+    delete window[callback];
+
+    if (!data || data.success !== true) {
+
+      list.textContent = "Unable to load notes.";
+
+      return;
+    }
+
+    const notes = data.notes || [];
+
+    list.innerHTML = "";
+
+    if (notes.length === 0) {
+
+      list.textContent =
+        "No published notes available yet.";
+
+      return;
+    }
+
+    // Display published notes
+    notes.forEach(note => {
+
+      const card = document.createElement("article");
+
+      card.className = "note-card";
+
+      const title = document.createElement("h3");
+
+      title.textContent =
+        note.Title || "Untitled Notes";
+
+      const subject = document.createElement("p");
+
+      subject.textContent =
+        "Subject: " + (note.Subject || "General");
+
+      const description = document.createElement("p");
+
+      description.textContent =
+        note.Description || "Study material";
+
+      const date = document.createElement("p");
+
+      date.textContent =
+        note.Upload_Date || "";
+
+      const link = document.createElement("a");
+
+      const pdfURL = String(note.PDF_Link || "").trim();
+
+      link.textContent = "📄 View PDF";
+
+      link.className = "primary linkbtn";
+
+      link.target = "_blank";
+
+      link.rel = "noopener noreferrer";
+
+      if (
+        /^https:\/\/(drive|docs)\.google\.com\//i.test(pdfURL)
+      ) {
+
+        link.href = pdfURL;
+
+      } else {
+
+        link.textContent = "PDF unavailable";
+
+      }
+
+      card.appendChild(title);
+      card.appendChild(subject);
+      card.appendChild(description);
+      card.appendChild(date);
+      card.appendChild(link);
+
+      list.appendChild(card);
+
+    });
+
+  };
+
+  // Handle errors
   script.onerror = function() {
 
     if (completed) return;
 
     completed = true;
 
-    cleanup();
+    clearTimeout(timeout);
 
-    showError(
-      "Connection error. Please check your internet and refresh notes."
-    );
+    delete window[callback];
+
+    script.remove();
+
+    list.textContent =
+      "Connection error. Please refresh the page.";
 
   };
 
-  document.body.appendChild(script);
-
-  setTimeout(() => {
+  // Timeout protection
+  const timeout = setTimeout(() => {
 
     if (completed) return;
 
     completed = true;
 
-    cleanup();
+    delete window[callback];
 
-    showError(
-      "Notes are taking too long to load. Please try again."
-    );
+    script.remove();
 
-  }, 20000);
+    list.textContent =
+      "Server response timed out. Please refresh.";
+
+  }, 15000);
+
+  // Request Google Apps Script
+  script.src =
+    STUDYMATE_API +
+    "?callback=" + encodeURIComponent(callback) +
+    "&t=" + Date.now();
+
+  document.body.appendChild(script);
 
 }
 
-// ===============================
-// START STUDYMATE
-// ===============================
+// ==========================================
+// 14. INITIALIZE STUDYMATE
+// ==========================================
 
 renderSubjects();
 
@@ -635,6 +462,6 @@ renderQuestion();
 
 updateProgress();
 
-createNotesToolbar();
+loadStudyMateNotes();
 
-loadNotes();
+console.log("StudyMate initialized successfully!");
